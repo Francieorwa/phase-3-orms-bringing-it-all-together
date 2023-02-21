@@ -2,7 +2,7 @@ class Dog
 
     attr_accessor :name, :breed, :id
 
-    def initialize(name:, breed:, id: nil)
+    def initialize(id:nil,name:,breed:)
       @id = id
       @name = name
       @breed =breed
@@ -58,17 +58,29 @@ class Dog
       self.new_from_db(row)
     end
   end
-  def self.find_by_name(name)
-    sql = <<-SQL
-      SELECT *
-      FROM dogs
-      WHERE name = ?
-      LIMIT 1
-    SQL
+  # def self.find_by_name(name)
+  #   sql = <<-SQL
+  #     SELECT *
+  #     FROM dogs
+  #     WHERE name = ?
+  #     LIMIT 1
+  #   SQL
 
-    DB[:conn].execute(sql, name).map do |row|
-      self.new_from_db(row)
-    end.first
+  #   DB[:conn].execute(sql, name).map do |row|
+  #     self.new_from_db(row)
+  #   end.first
+  # end
+  # def self.find_by_name(name)
+  #   sql = "SELECT * FROM dogs WHERE name = ? LIMIT 1"
+  #   DB[:conn].execute(sql, name).map do |row|
+  #         self.new_from_db(row)
+  #       end.first
+  # end
+  
+  def self.find_by_name(name)
+    sql = "SELECT * FROM dogs WHERE name = ? LIMIT 1"
+    result = DB[:conn].execute(sql, name)[0]
+    Dog.new(id:result[0],name: result[1],breed: result[2])
   end
   def self.find(id)
     sql = <<-SQL
